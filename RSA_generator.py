@@ -45,7 +45,7 @@ def generate_rsa_keys(pin: int) -> (bytes, bytes):
         format=serialization.PublicFormat.SubjectPublicKeyInfo
     )
 
-    return encrypted_private_key, public_key
+    return encrypted_private_key, public_key_pem
 
 
 def save_keys(private_key: bytes, public_key: bytes) -> None:
@@ -60,5 +60,5 @@ def save_keys(private_key: bytes, public_key: bytes) -> None:
 
 if __name__ == "__main__":
     pin = get_pin()
-    encrypted_private_key, public_key = generate_rsa_keys(pin)
-    save_keys(encrypted_private_key, public_key)
+    encrypted_private_key, public_key_pem = generate_rsa_keys(pin)
+    save_keys(encrypted_private_key, public_key_pem)
