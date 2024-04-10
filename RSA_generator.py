@@ -33,12 +33,12 @@ def generate_rsa_keys(pin: int) -> (bytes, bytes):
     cipher = Cipher(algorithms.AES(aes_key), modes.CFB(initialization_vector), backend=default_backend())
     encryptor = cipher.encryptor()
 
-    private_key_bytes = private_key.private_bytes(
+    private_key_pem = private_key.private_bytes(
         encoding=serialization.Encoding.PEM,
         format=serialization.PrivateFormat.PKCS8,
         encryption_algorithm=serialization.NoEncryption()
     )
-    encrypted_private_key = encryptor.update(private_key_bytes) + encryptor.finalize()
+    encrypted_private_key = encryptor.update(private_key_pem) + encryptor.finalize()
 
     public_key_pem = public_key.public_bytes(
         encoding=serialization.Encoding.PEM,
