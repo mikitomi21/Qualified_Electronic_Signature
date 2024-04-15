@@ -5,8 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:XAdES_App"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800" Background="#FF202020">
     <Grid>
+        <TextBox TextWrapping="Wrap" Text="TextBox" Margin="366,54,363,249" RenderTransformOrigin="0.529,0.002"/>
+        <Label Content="XAdES Signing App" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Foreground="White"/>
+        <Button Content="Button" HorizontalAlignment="Left" Margin="298,232,0,0" VerticalAlignment="Top" Height="77" Width="207" Click="Button_Click"/>
 
     </Grid>
 </Window>
+

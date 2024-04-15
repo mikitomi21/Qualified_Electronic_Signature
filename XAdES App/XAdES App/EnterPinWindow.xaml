@@ -1,0 +1,17 @@
+﻿<Window x:Class="XAdES_App.EnterPinWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:XAdES_App"
+        mc:Ignorable="d"
+        Title="EnterPinWindow" Height="150" Width="350" Background="#FF202020"
+        ResizeMode="NoResize">
+    <Grid>
+        <Label Content="Enter PIN:" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" FontSize="18"/>
+        <TextBox x:Name="PinText" TextWrapping="Wrap" Text="TextBox" TextAlignment="Center" Margin="84,39,84,0" Height="28" VerticalAlignment="Top" TextChanged="TextBox_TextChanged"/>
+        <Button Content="OK" Margin="45,76,189,0" VerticalAlignment="Top" Height="30" Click="SubmitPin"/>
+        <Button Content="Cancel" Margin="186,76,45,0" VerticalAlignment="Top" Height="30"/>
+
+    </Grid>
+</Window>
