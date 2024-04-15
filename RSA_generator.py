@@ -50,9 +50,9 @@ def generate_rsa_keys(pin: int) -> (bytes, bytes):
 
 def save_keys(private_key: bytes, public_key: bytes) -> None:
     with open('private_key.pem', 'wb') as f:
-        f.write(b"-----BEGIN RSA PRIVATE KEY-----")
+        #f.write(b"-----BEGIN RSA PRIVATE KEY-----")
         f.write(private_key)
-        f.write(b"-----END RSA PRIVATE KEY-----")
+        #f.write(b"-----END RSA PRIVATE KEY-----")
 
     with open('public_key.pem', 'wb') as f:
         f.write(public_key)
