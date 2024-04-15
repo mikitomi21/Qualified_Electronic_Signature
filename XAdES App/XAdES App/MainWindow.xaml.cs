@@ -12,22 +12,24 @@ using System.Windows.Shapes;
 using System;
 using System.Security.Cryptography;
 using System.IO.Packaging;
-
+using Microsoft.Win32;
 
 namespace XAdES_App
 {
     public partial class MainWindow : Window
     {
+        private string _privateKeyPath = "";
+        private string _inputFilePath = "";
+
         public MainWindow()
         {
             InitializeComponent();
         }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            LoadRSAKeyFromFile("D:\\Studia\\6\\Bezpieczeństwo Systemów Komputerowych\\Projekt\\Qualified_Electronic_Signature\\private_key.pem");
-            XAdESSigner.SingDocument(new FileInfo("C:\\Users\\Ewikk\\Desktop\\piotr.png"));
+            RSA rsa = LoadRSAKeyFromFile(_privateKeyPath);
+            XAdESSigner.SingDocument(rsa, new FileInfo(_inputFilePath));
 
-           
         }
         private RSA LoadRSAKeyFromFile(string path)
         {
@@ -45,6 +47,27 @@ namespace XAdES_App
                 rsa = DecryptRSA(fileBytes, int.Parse(pin));
             }
             return rsa;
+        }
+
+        private string ChooseFile(string filter = "")
+        {
+            Microsoft.Win32.OpenFileDialog dialog = new();
+
+            dialog.Multiselect = false;
+            dialog.Title = "Select a folder";
+            dialog.Filter = filter;
+            dialog.InitialDirectory = Environment.CurrentDirectory;
+
+            // Show open folder dialog box
+            bool? result = dialog.ShowDialog();
+
+            // Process open folder dialog box results
+            if (result == true)
+            {
+                // Get the selected folder
+                return dialog.FileName;
+            }
+            return "";
         }
 
 
@@ -104,7 +127,18 @@ namespace XAdES_App
             }
         }
 
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            _privateKeyPath = ChooseFile("PEM files | *.pem");
+            FileInfo fileInfo = new FileInfo(_privateKeyPath);
+            PrivateKeyFileName.Content = fileInfo.Name;
+        }
 
-
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            _inputFilePath = ChooseFile();
+            FileInfo fileInfo = new FileInfo(_inputFilePath);
+            InputFileName.Content = fileInfo.Name;
+        }
     }
 }

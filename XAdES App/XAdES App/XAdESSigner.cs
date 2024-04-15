@@ -24,22 +24,24 @@ namespace XAdES_App
                 new XElement("Date_of_modification", document.LastWriteTime)
                 );
             var fileHash = CalculateFileHash(document.FullName, HashAlgorithm.Create("SHA256"));
-            XElement hash = new XElement("File_Hash", fileHash);
+            var encryptedFileHash = rsa.SignHash(fileHash, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+            XElement hash = new XElement("Signature", Convert.ToBase64String(encryptedFileHash));
             XElement timestamp = new XElement("Timestamp", DateTime.Now.ToString());
 
-            XElement signature = new XElement("Signature", file, hash, timestamp);
+            XElement signature = new XElement("XAdES", file, hash, timestamp);
             byte[] signatureContent = Encoding.UTF8.GetBytes(signature.ToString());
 
             signature.Save($"{document.DirectoryName}/{document.Name}_signature.xml");
 
         }
 
-        static string CalculateFileHash(string filePath, HashAlgorithm hashAlgorithm)
+        static byte[] CalculateFileHash(string filePath, HashAlgorithm hashAlgorithm)
         {
             using (var stream = File.OpenRead(filePath))
             {
                 byte[] hashBytes = hashAlgorithm.ComputeHash(stream);
-                return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+                return hashBytes;
+                //return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
             }
         }
     }

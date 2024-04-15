@@ -10,7 +10,18 @@
         <TextBox TextWrapping="Wrap" Text="TextBox" Margin="366,54,363,249" RenderTransformOrigin="0.529,0.002"/>
         <Label Content="XAdES Signing App" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Foreground="White"/>
         <Button Content="Button" HorizontalAlignment="Left" Margin="298,232,0,0" VerticalAlignment="Top" Height="77" Width="207" Click="Button_Click"/>
+        <Grid Margin="45,94,0,0" HorizontalAlignment="Left" Width="276" Height="123" VerticalAlignment="Top">
+            <Label Content="Private Key" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White"/>
+            <Button Content="Choose file" Margin="56,41,56,0" Click="Button_Click_1" Height="27" VerticalAlignment="Top" />
+            <Label x:Name="PrivateKeyFileName" Content="placeholder" HorizontalAlignment="Center" Margin="0,78,0,0" VerticalAlignment="Top" Foreground="White" FontWeight="Bold"/>
 
+        </Grid>
+        <Grid Margin="40,217,0,0" HorizontalAlignment="Left" Width="276" Height="123" VerticalAlignment="Top">
+            <Label Content="File" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White"/>
+            <Button Content="Choose file" Margin="56,41,56,0"  Height="27" VerticalAlignment="Top" Click="Button_Click_2" />
+            <Label x:Name="InputFileName" Content="placeholder" HorizontalAlignment="Center" Margin="0,78,0,0" VerticalAlignment="Top" Foreground="White" FontWeight="Bold"/>
+
+        </Grid>
     </Grid>
 </Window>
 
