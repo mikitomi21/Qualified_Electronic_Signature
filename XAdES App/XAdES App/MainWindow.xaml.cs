@@ -13,6 +13,9 @@ using System;
 using System.Security.Cryptography;
 using System.IO.Packaging;
 using Microsoft.Win32;
+using System.Runtime.CompilerServices;
+using System.Xml;
+using System.Diagnostics;
 
 namespace XAdES_App
 {
@@ -26,25 +29,43 @@ namespace XAdES_App
         };
 
         private string _privateKeyPath = "";
+        private string _publicKeyPath = "D:\\Studia\\6\\Bezpieczeństwo Systemów Komputerowych\\Projekt\\Qualified_Electronic_Signature\\public_key.pem";
         private string _inputFilePath = "";
 
         public MainWindow()
         {
             InitializeComponent();
-            var test = ModePanel.Children;
+            HideEveryChild(ModePanel);
+            if (null != ModePanel.Children[0]) ModePanel.Children[0].Visibility = Visibility.Visible;
         }
         private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            RSA rsa = LoadRSAKeyFromFile(_publicKeyPath);
+            XmlDocument xmlDocument = new XmlDocument();
+            xmlDocument.Load("D:\\Studia\\6\\Bezpieczeństwo Systemów Komputerowych\\Projekt\\Qualified_Electronic_Signature\\.gitignore_signature.xml");
+            var test = XAdESSigner.VerifySignature(rsa,
+                new FileInfo("D:\\Studia\\6\\Bezpieczeństwo Systemów Komputerowych\\Projekt\\Qualified_Electronic_Signature\\.gitignore"),
+                xmlDocument);
+            Console.WriteLine(test);
+        }
+
+        private void SignButton(object sender, RoutedEventArgs e)
+        {
+            Sign();
+        }
+
+        private void Sign()
         {
             try
             {
                 RSA rsa = LoadRSAKeyFromFile(_privateKeyPath);
-                XAdESSigner.SingDocument(rsa, new FileInfo(_inputFilePath));
+                string newFilePath = XAdESSigner.SingDocument(rsa, new FileInfo(_inputFilePath));
+                Process.Start("explorer.exe", $"/select,\"{newFilePath}\"");
             }
             catch (PinNotSubmittedException)
             {
 
             }
-
         }
         private RSA LoadRSAKeyFromFile(string path)
         {
@@ -58,7 +79,7 @@ namespace XAdES_App
             catch
             {
                 string pin = GetPin();
-                rsa = DecryptRSA(fileBytes, int.Parse(pin));
+                rsa = EncyptionUtils.DecryptRSA(fileBytes, int.Parse(pin));
             }
             return rsa;
         }
@@ -81,22 +102,6 @@ namespace XAdES_App
             return "";
         }
 
-
-        private RSA DecryptRSA(byte[] encryptedRSA, int pin)
-        {
-            byte[] pinBytes = BitConverter.GetBytes(pin);
-            byte[] key = new byte[32];
-            byte[] iv = new byte[16];
-            Array.Copy(pinBytes, key, pinBytes.Length);
-            Array.Copy(pinBytes, iv, pinBytes.Length);
-            byte[] decryptedRSA = AesCfbDecrypt(encryptedRSA, key, iv);
-            char[] charArr = Encoding.ASCII.GetChars(decryptedRSA);
-            RSA rsa = RSA.Create();
-            rsa.ImportFromPem(charArr);
-            Console.WriteLine(Convert.ToBase64String(rsa.ExportPkcs8PrivateKey()));
-            return rsa;
-        }
-
         /// <summary>
         /// This method prompts the user for PIN entry.
         /// </summary>
@@ -109,36 +114,7 @@ namespace XAdES_App
             return enterPinWindow.WasPinSubmitted ? enterPinWindow.Pin : throw new PinNotSubmittedException("Pin not submitted");
         }
 
-        private byte[] AesCfbDecrypt(byte[] encryptedArr, byte[] key, byte[] iv, int blockSize = 128)
-        {
-            using (Aes aes = Aes.Create())
-            {
-                aes.Key = key;
-
-                //Probably unnecessary block
-                aes.IV = iv;
-                aes.BlockSize = blockSize;
-                aes.Mode = CipherMode.CFB;
-                //
-
-                int paddedArraySize = ((encryptedArr.Length / blockSize) + 1) * blockSize;
-                byte[] encryptedPaddedArr = new byte[paddedArraySize];
-                byte[] decryptedPaddedArr = new byte[paddedArraySize];
-                Array.Copy(encryptedArr, encryptedPaddedArr, encryptedArr.Length);
-                int bytesWritten = 0;
-                aes.TryDecryptCfb(encryptedPaddedArr, iv, decryptedPaddedArr, out bytesWritten, PaddingMode.None, blockSize);
-                if (bytesWritten == paddedArraySize)
-                {
-                    byte[] decryptedArr = new byte[encryptedArr.Length];
-                    Array.Copy(decryptedPaddedArr, decryptedArr, decryptedArr.Length);
-                    return decryptedArr;
-                }
-                else
-                {
-                    throw new Exception("Could not decrypt entire array.");
-                }
-            }
-        }
+       
 
         private void ChooseKeyButton(object sender, RoutedEventArgs e)
         {
@@ -154,11 +130,9 @@ namespace XAdES_App
             InputFileName.Content = fileInfo.Name;
         }
 
-        private void ModeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void HideEveryChild(Panel panel)
         {
-            return;
-            if (null == ModePanel) return;
-            foreach (UIElement child in ModePanel.Children) child.Visibility = Visibility.Hidden;
+            foreach (UIElement child in panel.Children) child.Visibility = Visibility.Hidden;
         }
 
         private void ModeSelected(object sender, RoutedEventArgs e)

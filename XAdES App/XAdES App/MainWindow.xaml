@@ -9,14 +9,14 @@
     <Grid Name="MainGrid">
         <Label Content="XAdES Signing App" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Foreground="White"/>
         <Label Content="Mode" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="16" FontWeight="Bold" Foreground="White" Margin="0,36,0,0"/>
-        <ComboBox Name="ModeCombo" HorizontalAlignment="Center" FontSize="14" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,67,0,0" VerticalAlignment="Top" Width="150" Height="25" SelectionChanged="ModeComboBox_SelectionChanged">
+        <ComboBox Name="ModeCombo" HorizontalAlignment="Center" FontSize="14" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,67,0,0" VerticalAlignment="Top" Width="150" Height="25">
             <ComboBoxItem Name="SignPanelSelector" Selected="ModeSelected" IsSelected="True" Content="Sign"/>
             <ComboBoxItem Name="VerifyPanelSelector" Selected="ModeSelected" >Verify Signature</ComboBoxItem>
             <ComboBoxItem Name="EncryptPanelSelector" Selected="ModeSelected" >Encrypt</ComboBoxItem>
             <ComboBoxItem Name="DecryptPanelSelector" Selected="ModeSelected" >Decrypt</ComboBoxItem>
         </ComboBox>
         <Grid Name="ModePanel" Margin="0,97,0,0">
-            <Grid x:Name="SignPanel" Visibility="Visible" >
+            <Grid x:Name="SignPanel" Visibility="Hidden" >
                 <Grid.RowDefinitions >
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
@@ -43,10 +43,12 @@
                     <Label Grid.Row="2" x:Name="InputFileName" Content="ds" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" FontWeight="Bold"/>
                 </Grid>
                 <Grid Grid.Row="2">
-                    <Button Height="25" Content="Sign" Width="150"/>
+                    <Button Height="25" Content="Sign" Width="150" Click="SignButton"/>
                 </Grid>
+            </Grid>
         </Grid>
-    </Grid>
+        <Button VerticalAlignment="Top" Click="Button_Click" Content="Test" Height="49" Margin="359,10,0,0"/>
+
 
     </Grid>
 
