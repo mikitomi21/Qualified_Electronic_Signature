@@ -16,6 +16,8 @@ using Microsoft.Win32;
 using System.Runtime.CompilerServices;
 using System.Xml;
 using System.Diagnostics;
+using System.Security.Cryptography.Xml;
+using System.Reflection;
 
 namespace XAdES_App
 {
@@ -28,9 +30,14 @@ namespace XAdES_App
             public PinNotSubmittedException(string message, Exception inner) : base(message, inner) { }
         };
 
+        private const int MAX_RSA_FILE_SIZE_IN_BYTES = 512;
+
         private string _privateKeyPath = "D:\\Studia\\6\\Bezpieczeństwo Systemów Komputerowych\\Projekt\\Qualified_Electronic_Signature\\private_key.pem";
         private string _publicKeyPath = "D:\\Studia\\6\\Bezpieczeństwo Systemów Komputerowych\\Projekt\\Qualified_Electronic_Signature\\public_key.pem";
         private string _inputFilePath = "";
+        private string _signatureFilePath = "";
+        private string _encryptedFilePath = "";
+        private string _fileToBeEncryptedPath = "";
 
         public MainWindow()
         {
@@ -38,22 +45,20 @@ namespace XAdES_App
             HideEveryChild(ModePanel);
             if (null != ModePanel.Children[0]) ModePanel.Children[0].Visibility = Visibility.Visible;
         }
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-           
-        }
 
-        private void EncryptFile(string filePath)
+        private bool EncryptFile(string filePath)
         {
             RSA rsa = LoadRSAKeyFromFile(_publicKeyPath);
             string newFilePath = EncryptionUtils.RSAEncryptWithPublicKey(new FileInfo(filePath), rsa.ExportRSAPublicKey());
             Process.Start("explorer.exe", $"/select,\"{newFilePath}\"");
+            return true;
         }
-        private void DecryptFile(string filePath)
+        private bool DecryptFile(string filePath)
         {
             RSA rsa = LoadRSAKeyFromFile(_privateKeyPath);
             string newFilePath = EncryptionUtils.RSADecryptWithPrivateKey(new FileInfo(filePath), rsa.ExportRSAPrivateKey());
             Process.Start("explorer.exe", $"/select,\"{newFilePath}\"");
+            return true;
         }
 
         private void SignButton(object sender, RoutedEventArgs e)
@@ -68,11 +73,25 @@ namespace XAdES_App
                 RSA rsa = LoadRSAKeyFromFile(_privateKeyPath);
                 string newFilePath = XAdESSigner.SingDocument(rsa, new FileInfo(_inputFilePath));
                 Process.Start("explorer.exe", $"/select,\"{newFilePath}\"");
+                ShowResult("File was successfully signed.", true);
             }
             catch (PinNotSubmittedException)
             {
 
             }
+        }
+        private void VerifyButton(object sender, RoutedEventArgs e)
+        {
+            Verify();
+        }
+
+        private void Verify()
+        {
+            RSA rsa = LoadRSAKeyFromFile(_publicKeyPath);
+            XmlDocument signature = new XmlDocument();
+            signature.Load(_signatureFilePath);
+            if (XAdESSigner.VerifySignature(rsa, new FileInfo(_inputFilePath), signature)) ShowResult("Signature is valid.", true);
+            else ShowResult("Signature is invalid");
         }
         private RSA LoadRSAKeyFromFile(string path)
         {
@@ -91,12 +110,12 @@ namespace XAdES_App
             return rsa;
         }
 
-        private string ChooseFile(string filter = "")
+        private string ChooseFile(string filter = "", string windowTitle = "Select file")
         {
             OpenFileDialog dialog = new();
 
             dialog.Multiselect = false;
-            dialog.Title = "Select a folder";
+            dialog.Title = windowTitle;
             dialog.Filter = filter;
             dialog.InitialDirectory = Environment.CurrentDirectory;
 
@@ -121,20 +140,78 @@ namespace XAdES_App
             return enterPinWindow.WasPinSubmitted ? enterPinWindow.Pin : throw new PinNotSubmittedException("Pin not submitted");
         }
 
-       
 
-        private void ChooseKeyButton(object sender, RoutedEventArgs e)
+
+        private void ChoosePrivateKeyButton(object sender, RoutedEventArgs e)
         {
             _privateKeyPath = ChooseFile("PEM files | *.pem");
             FileInfo fileInfo = new FileInfo(_privateKeyPath);
             PrivateKeyFileName.Content = fileInfo.Name;
+            PrivateKeyFileName2.Content = fileInfo.Name;
         }
+        private void ChoosePublicKeyButton(object sender, RoutedEventArgs e)
+        {
+            _publicKeyPath = ChooseFile("PEM files | *.pem");
+            FileInfo fileInfo = new FileInfo(_publicKeyPath);
+            PublicKeyFileName.Content = fileInfo.Name;
+            PublicKeyFileName2.Content = fileInfo.Name;
+        }
+
 
         private void ChooseFileButton(object sender, RoutedEventArgs e)
         {
             _inputFilePath = ChooseFile();
-            FileInfo fileInfo = new FileInfo(_inputFilePath);
+            if (_inputFilePath.Equals("")) return;
+            FileInfo fileInfo = null;
+            try
+            {
+                fileInfo = new FileInfo(_inputFilePath);
+            }
+            catch (Exception ex) { ShowResult(ex.Message); }
             InputFileName.Content = fileInfo.Name;
+            InputFileName2.Content = fileInfo.Name;
+        }
+
+        private void ChooseSignatureFileButton(object sender, RoutedEventArgs e)
+        {
+            _signatureFilePath = ChooseFile("XML files | *.xml");
+            if (_signatureFilePath.Equals("")) return;
+            FileInfo fileInfo = new FileInfo(_signatureFilePath);
+            SignatureFileLabel.Content = fileInfo.Name;
+        }
+        private void ChooseFileToEncrypt(object sender, RoutedEventArgs e)
+        {
+            _fileToBeEncryptedPath = ChooseFile();
+            if (_fileToBeEncryptedPath.Equals("")) return;
+            FileInfo fileInfo = null;
+            try
+            {
+                fileInfo = new FileInfo(_fileToBeEncryptedPath);
+            }
+            catch (Exception ex) { ShowResult(ex.Message); }
+            if (fileInfo.Length > MAX_RSA_FILE_SIZE_IN_BYTES) throw new NotImplementedException();
+            FileToEncryptLabel.Content = fileInfo.Name;
+        }
+
+        private void EncryptFileButton(object sender, RoutedEventArgs e)
+        {
+            if(EncryptFile(_fileToBeEncryptedPath)) ShowResult("File was successfully encrypted", true);
+            else ShowResult("An error occurred while encrypting", true);
+        }
+
+        private void DecryptFileButton(object sender, RoutedEventArgs e)
+        {
+            DecryptFile(_encryptedFilePath);
+        }
+
+        private void ChooseFileToDecrypt(object sender, RoutedEventArgs e)
+        {
+            _encryptedFilePath = ChooseFile("Encrypted files | *.enc");
+            if (_encryptedFilePath.Equals("")) return;
+            FileInfo fileInfo = new FileInfo(_encryptedFilePath);
+            var test = Math.Floor(4096f / 8) - 11;
+            if (fileInfo.Length > MAX_RSA_FILE_SIZE_IN_BYTES) throw new NotImplementedException();
+            FileToDecryptLabel.Content = fileInfo.Name;
         }
 
         private void HideEveryChild(Panel panel)
@@ -142,8 +219,19 @@ namespace XAdES_App
             foreach (UIElement child in panel.Children) child.Visibility = Visibility.Hidden;
         }
 
+        private void ShowResult(string message, bool success = false)
+        {
+            if (null == Result) return;
+
+            Result.Content = message;
+
+            if (success) Result.Foreground = Brushes.Green;
+            else Result.Foreground = Brushes.Red;
+        }
+
         private void ModeSelected(object sender, RoutedEventArgs e)
         {
+            ShowResult("");
             if (null == ModePanel) return;
             foreach (Panel child in ModePanel.Children)
             {

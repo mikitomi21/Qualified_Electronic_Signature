@@ -15,7 +15,7 @@
             <ComboBoxItem Name="EncryptPanelSelector" Selected="ModeSelected" >Encrypt</ComboBoxItem>
             <ComboBoxItem Name="DecryptPanelSelector" Selected="ModeSelected" >Decrypt</ComboBoxItem>
         </ComboBox>
-        <Grid Name="ModePanel" Margin="0,97,0,0">
+        <Grid Name="ModePanel" Margin="0,97,0,33">
             <Grid x:Name="SignPanel" Visibility="Hidden" >
                 <Grid.RowDefinitions >
                     <RowDefinition Height="*"/>
@@ -29,7 +29,7 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <Label Grid.Row="0" Height="auto" Content="Private key" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" />
-                    <Button Grid.Row="1" Content="Choose file"  Click="ChooseKeyButton" Height="auto" Width="150"/>
+                    <Button Grid.Row="1" Content="Choose file"  Click="ChoosePrivateKeyButton" Height="auto" Width="150"/>
                     <Label Grid.Row="2" Height="auto" x:Name="PrivateKeyFileName" Content="dsd" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" FontWeight="Bold"/>
                 </Grid>
                 <Grid Grid.Row="1" Width="auto" VerticalAlignment="Stretch">
@@ -46,8 +46,116 @@
                     <Button Height="25" Content="Sign" Width="150" Click="SignButton"/>
                 </Grid>
             </Grid>
+            <Grid x:Name="VerifyPanel" Visibility="Hidden">
+                <Grid.RowDefinitions >
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="50"/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0" Width="auto" VerticalAlignment="Stretch">
+                    <Grid.RowDefinitions >
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="35"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Row="0" Height="auto" Content="File" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" />
+                    <Button Grid.Row="1" Content="Choose file"  Click="ChooseFileButton" Height="auto" Width="150"/>
+                    <Label Grid.Row="2" Height="auto" x:Name="InputFileName2" Content="" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" FontWeight="Bold"/>
+                </Grid>
+                <Grid Grid.Row="1" Width="auto" VerticalAlignment="Stretch">
+                    <Grid.RowDefinitions >
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="35"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Row="0" Height="auto" Content="Signature file" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" />
+                    <Button Grid.Row="1" Content="Choose file"  Click="ChooseSignatureFileButton" Height="auto" Width="150"/>
+                    <Label Grid.Row="2" Height="auto" x:Name="SignatureFileLabel" Content="" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" FontWeight="Bold"/>
+                </Grid>
+                <Grid Grid.Row="2" Width="auto" VerticalAlignment="Stretch">
+                    <Grid.RowDefinitions >
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="35"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Row="0" Height="auto" Content="Public key" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" />
+                    <Button Grid.Row="1" Content="Choose file"  Click="ChoosePublicKeyButton" Height="auto" Width="150"/>
+                    <Label Grid.Row="2" Height="auto" x:Name="PublicKeyFileName" Content="" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" FontWeight="Bold"/>
+                </Grid>
+
+                <Grid Grid.Row="3">
+                    <Button Height="25" Content="Verify" Width="150" Click="VerifyButton"/>
+                </Grid>
+
+            </Grid>
+            <Grid x:Name="EncryptPanel" Visibility="Hidden">
+                <Grid.RowDefinitions >
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="50"/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0" Width="auto" VerticalAlignment="Stretch">
+                    <Grid.RowDefinitions >
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="35"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Row="0" Height="auto" Content="File to Encrypt" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" />
+                    <Button Grid.Row="1" Content="Choose file"  Click="ChooseFileToEncrypt" Height="auto" Width="150"/>
+                    <Label Grid.Row="2" Height="auto" x:Name="FileToEncryptLabel" Content="" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" FontWeight="Bold"/>
+                </Grid>
+                <Grid Grid.Row="1" Width="auto" VerticalAlignment="Stretch">
+                    <Grid.RowDefinitions >
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="35"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Row="0" Height="auto" Content="Recipient public key" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" />
+                    <Button Grid.Row="1" Content="Choose file"  Click="ChoosePublicKeyButton" Height="auto" Width="150"/>
+                    <Label Grid.Row="2" Height="auto" x:Name="PublicKeyFileName2" Content="" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" FontWeight="Bold"/>
+                </Grid>
+
+                <Grid Grid.Row="2">
+                    <Button Height="25" Content="Encrypt" Width="150" Click="EncryptFileButton"/>
+                </Grid>
+
+            </Grid>
+            <Grid x:Name="DecryptPanel">
+                <Grid.RowDefinitions >
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="50"/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0" Width="auto" VerticalAlignment="Stretch">
+                    <Grid.RowDefinitions >
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="35"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Row="0" Height="auto" Content="File to Decrypt" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" />
+                    <Button Grid.Row="1" Content="Choose file"  Click="ChooseFileToDecrypt" Height="auto" Width="150"/>
+                    <Label Grid.Row="2" Height="auto" x:Name="FileToDecryptLabel" Content="" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" FontWeight="Bold"/>
+                </Grid>
+                <Grid Grid.Row="1" Width="auto" VerticalAlignment="Stretch">
+                    <Grid.RowDefinitions >
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="35"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Row="0" Height="auto" Content="Private Key" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" />
+                    <Button Grid.Row="1" Content="Choose file"  Click="ChoosePrivateKeyButton" Height="auto" Width="150"/>
+                    <Label Grid.Row="2" Height="auto" x:Name="PrivateKeyFileName2" Content="" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" FontWeight="Bold"/>
+                </Grid>
+
+                <Grid Grid.Row="2">
+                    <Button Height="25" Content="Decrypt" Width="150" Click="DecryptFileButton"/>
+                </Grid>
+
+            </Grid>
         </Grid>
-        <Button VerticalAlignment="Top" Click="Button_Click" Content="Test" Height="49" Margin="359,10,0,0"/>
+        <Label Name="Result" Content="Result" Foreground="White" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,10"/>
+        <!--<Button VerticalAlignment="Top" Click="Button_Click" Content="Test" Height="49" Margin="359,10,0,0"/>-->
 
 
     </Grid>
