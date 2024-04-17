@@ -1,9 +1,13 @@
-﻿using System.Security.Cryptography;
+﻿using System.IO;
+using System.Reflection;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Windows.Shapes;
 
 namespace XAdES_App
 {
-    public static class EncyptionUtils
+    public static class EncryptionUtils
     {
         public static RSA DecryptRSA(byte[] encryptedRSA, int pin)
         {
@@ -16,7 +20,7 @@ namespace XAdES_App
             char[] charArr = Encoding.ASCII.GetChars(decryptedRSA);
             RSA rsa = RSA.Create();
             rsa.ImportFromPem(charArr);
-            Console.WriteLine(Convert.ToBase64String(rsa.ExportPkcs8PrivateKey()));
+            //Console.WriteLine(Convert.ToBase64String(rsa.ExportPkcs8PrivateKey()));
             return rsa;
         }
 
@@ -48,6 +52,36 @@ namespace XAdES_App
                 {
                     throw new Exception("Could not decrypt entire array.");
                 }
+            }
+        }
+
+        /// <returns>Path to an encrypted file</returns>
+        public static string RSAEncryptWithPublicKey(FileInfo fileInfo, byte[] publicKey, bool deleteOriginalFile = false)
+        {
+            byte[] fileBytes = File.ReadAllBytes(fileInfo.FullName);
+            using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider())
+            {
+                rsa.ImportRSAPublicKey(publicKey, out _);
+                byte[] encryptedData = rsa.Encrypt(fileBytes, true);
+                string filePath = $"{fileInfo.FullName}.enc";
+                File.WriteAllBytes(filePath, encryptedData);
+                if(deleteOriginalFile) File.Delete(fileInfo.FullName);
+                return filePath;
+            }
+            
+        }    
+
+        public static string RSADecryptWithPrivateKey(FileInfo encryptedFileInfo, byte[] privateKey, bool deleteEncryptedFile = false)
+        {
+            byte[] encryptedFileBytes = File.ReadAllBytes(encryptedFileInfo.FullName);
+            using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider())
+            {
+                rsa.ImportRSAPrivateKey(privateKey, out _);
+                byte[] decryptedData = rsa.Decrypt(encryptedFileBytes, true);
+                string filePath = System.IO.Path.ChangeExtension(encryptedFileInfo.FullName, null);
+                File.WriteAllBytes(filePath, decryptedData);
+                if (deleteEncryptedFile) File.Delete(encryptedFileInfo.FullName);
+                return filePath;
             }
         }
 

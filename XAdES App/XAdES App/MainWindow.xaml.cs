@@ -28,7 +28,7 @@ namespace XAdES_App
             public PinNotSubmittedException(string message, Exception inner) : base(message, inner) { }
         };
 
-        private string _privateKeyPath = "";
+        private string _privateKeyPath = "D:\\Studia\\6\\Bezpieczeństwo Systemów Komputerowych\\Projekt\\Qualified_Electronic_Signature\\private_key.pem";
         private string _publicKeyPath = "D:\\Studia\\6\\Bezpieczeństwo Systemów Komputerowych\\Projekt\\Qualified_Electronic_Signature\\public_key.pem";
         private string _inputFilePath = "";
 
@@ -40,13 +40,20 @@ namespace XAdES_App
         }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+           
+        }
+
+        private void EncryptFile(string filePath)
+        {
             RSA rsa = LoadRSAKeyFromFile(_publicKeyPath);
-            XmlDocument xmlDocument = new XmlDocument();
-            xmlDocument.Load("D:\\Studia\\6\\Bezpieczeństwo Systemów Komputerowych\\Projekt\\Qualified_Electronic_Signature\\.gitignore_signature.xml");
-            var test = XAdESSigner.VerifySignature(rsa,
-                new FileInfo("D:\\Studia\\6\\Bezpieczeństwo Systemów Komputerowych\\Projekt\\Qualified_Electronic_Signature\\.gitignore"),
-                xmlDocument);
-            Console.WriteLine(test);
+            string newFilePath = EncryptionUtils.RSAEncryptWithPublicKey(new FileInfo(filePath), rsa.ExportRSAPublicKey());
+            Process.Start("explorer.exe", $"/select,\"{newFilePath}\"");
+        }
+        private void DecryptFile(string filePath)
+        {
+            RSA rsa = LoadRSAKeyFromFile(_privateKeyPath);
+            string newFilePath = EncryptionUtils.RSADecryptWithPrivateKey(new FileInfo(filePath), rsa.ExportRSAPrivateKey());
+            Process.Start("explorer.exe", $"/select,\"{newFilePath}\"");
         }
 
         private void SignButton(object sender, RoutedEventArgs e)
@@ -79,7 +86,7 @@ namespace XAdES_App
             catch
             {
                 string pin = GetPin();
-                rsa = EncyptionUtils.DecryptRSA(fileBytes, int.Parse(pin));
+                rsa = EncryptionUtils.DecryptRSA(fileBytes, int.Parse(pin));
             }
             return rsa;
         }
