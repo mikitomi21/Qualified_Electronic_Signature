@@ -16,7 +16,7 @@
             <ComboBoxItem Name="DecryptPanelSelector" Selected="ModeSelected" >Decrypt</ComboBoxItem>
         </ComboBox>
         <Grid Name="ModePanel" Margin="0,97,0,33">
-            <Grid x:Name="SignPanel" Visibility="Hidden" >
+            <Grid x:Name="SignPanel" Visibility="Visible" >
                 <Grid.RowDefinitions >
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
@@ -28,9 +28,9 @@
                         <RowDefinition Height="35"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <Label Grid.Row="0" Height="auto" Content="Private key" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" />
-                    <Button Grid.Row="1" Content="Choose file"  Click="ChoosePrivateKeyButton" Height="auto" Width="150"/>
-                    <Label Grid.Row="2" Height="auto" x:Name="PrivateKeyFileName" Content="dsd" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" FontWeight="Bold"/>
+                    <Label Grid.Row="0" Content="File" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" />
+                    <Button Grid.Row="1" Content="Choose file"  Click="ChooseFileButton" Height="auto" Width="150"/>
+                    <Label Grid.Row="2" x:Name="InputFileName" Content="" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" FontWeight="Bold"/>
                 </Grid>
                 <Grid Grid.Row="1" Width="auto" VerticalAlignment="Stretch">
                     <Grid.RowDefinitions >
@@ -38,9 +38,9 @@
                         <RowDefinition Height="35"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <Label Grid.Row="0" Content="File" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" />
-                    <Button Grid.Row="1" Content="Choose file"  Click="ChooseFileButton" Height="auto" Width="150"/>
-                    <Label Grid.Row="2" x:Name="InputFileName" Content="ds" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" FontWeight="Bold"/>
+                    <Label Grid.Row="0" Height="auto" Content="Private key" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" />
+                    <Button Grid.Row="1" Content="Choose file"  Click="ChoosePrivateKeyButton" Height="auto" Width="150"/>
+                    <Label Grid.Row="2" Height="auto" x:Name="PrivateKeyFileName" Content="" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" FontWeight="Bold"/>
                 </Grid>
                 <Grid Grid.Row="2">
                     <Button Height="25" Content="Sign" Width="150" Click="SignButton"/>
@@ -121,7 +121,7 @@
                 </Grid>
 
             </Grid>
-            <Grid x:Name="DecryptPanel">
+            <Grid x:Name="DecryptPanel" Visibility="Hidden">
                 <Grid.RowDefinitions >
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
@@ -154,7 +154,7 @@
 
             </Grid>
         </Grid>
-        <Label Name="Result" Content="Result" Foreground="White" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,10"/>
+        <Label Name="Result" Content="" Foreground="White" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,10"/>
         <!--<Button VerticalAlignment="Top" Click="Button_Click" Content="Test" Height="49" Margin="359,10,0,0"/>-->
 
 

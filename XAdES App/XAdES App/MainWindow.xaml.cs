@@ -2,22 +2,11 @@
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System;
 using System.Security.Cryptography;
-using System.IO.Packaging;
 using Microsoft.Win32;
-using System.Runtime.CompilerServices;
 using System.Xml;
 using System.Diagnostics;
-using System.Security.Cryptography.Xml;
-using System.Reflection;
 
 namespace XAdES_App
 {
@@ -31,6 +20,7 @@ namespace XAdES_App
         };
 
         private const int MAX_RSA_FILE_SIZE_IN_BYTES = 512;
+        private const string MAX_RSA_FILE_SIZE_EXCEED_ERROR_MSG = "File size is too big, File must be <=512 B";
 
         private string _privateKeyPath = "D:\\Studia\\6\\Bezpieczeństwo Systemów Komputerowych\\Projekt\\Qualified_Electronic_Signature\\private_key.pem";
         private string _publicKeyPath = "D:\\Studia\\6\\Bezpieczeństwo Systemów Komputerowych\\Projekt\\Qualified_Electronic_Signature\\public_key.pem";
@@ -79,6 +69,10 @@ namespace XAdES_App
             {
 
             }
+            catch (Exception ex)
+            {
+                ShowResult(ex.Message);
+            }
         }
         private void VerifyButton(object sender, RoutedEventArgs e)
         {
@@ -105,7 +99,11 @@ namespace XAdES_App
             catch
             {
                 string pin = GetPin();
-                rsa = EncryptionUtils.DecryptRSA(fileBytes, int.Parse(pin));
+                try
+                {
+                    rsa = EncryptionUtils.DecryptRSA(fileBytes, int.Parse(pin));
+                }
+                catch { throw new Exception("Invalid private key file or PIN was incorrect"); }
             }
             return rsa;
         }
@@ -161,7 +159,12 @@ namespace XAdES_App
         private void ChooseFileButton(object sender, RoutedEventArgs e)
         {
             _inputFilePath = ChooseFile();
-            if (_inputFilePath.Equals("")) return;
+            if (_inputFilePath.Equals(""))
+            {
+                InputFileName.Content = "";
+                InputFileName2.Content = "";
+                return;
+            }
             FileInfo fileInfo = null;
             try
             {
@@ -189,13 +192,27 @@ namespace XAdES_App
                 fileInfo = new FileInfo(_fileToBeEncryptedPath);
             }
             catch (Exception ex) { ShowResult(ex.Message); }
-            if (fileInfo.Length > MAX_RSA_FILE_SIZE_IN_BYTES) throw new NotImplementedException();
-            FileToEncryptLabel.Content = fileInfo.Name;
+            if (fileInfo.Length > MAX_RSA_FILE_SIZE_IN_BYTES) SetTextAndColor(FileToEncryptLabel, MAX_RSA_FILE_SIZE_EXCEED_ERROR_MSG, Brushes.Red);
+            else FileToEncryptLabel.Content = fileInfo.Name;
         }
 
         private void EncryptFileButton(object sender, RoutedEventArgs e)
         {
-            if(EncryptFile(_fileToBeEncryptedPath)) ShowResult("File was successfully encrypted", true);
+            if (!File.Exists(_fileToBeEncryptedPath))
+            {
+                SetTextAndColor(FileToEncryptLabel,
+                    $"{_fileToBeEncryptedPath}{(FileToEncryptLabel.Content.Equals("") ? "" : " ")}does not exist!",
+                    Brushes.Red);
+            }
+            FileInfo fileToBeEncryptedInfo = new FileInfo(_inputFilePath);
+            if (fileToBeEncryptedInfo.Length > MAX_RSA_FILE_SIZE_IN_BYTES)
+            {
+                SetTextAndColor(FileToEncryptLabel,
+                    MAX_RSA_FILE_SIZE_EXCEED_ERROR_MSG,
+                    Brushes.Red);
+            }
+
+            if (EncryptFile(_fileToBeEncryptedPath)) ShowResult("File was successfully encrypted", true);
             else ShowResult("An error occurred while encrypting", true);
         }
 
@@ -209,14 +226,20 @@ namespace XAdES_App
             _encryptedFilePath = ChooseFile("Encrypted files | *.enc");
             if (_encryptedFilePath.Equals("")) return;
             FileInfo fileInfo = new FileInfo(_encryptedFilePath);
-            var test = Math.Floor(4096f / 8) - 11;
-            if (fileInfo.Length > MAX_RSA_FILE_SIZE_IN_BYTES) throw new NotImplementedException();
+            if (fileInfo.Length > MAX_RSA_FILE_SIZE_IN_BYTES) SetTextAndColor(FileToDecryptLabel, MAX_RSA_FILE_SIZE_EXCEED_ERROR_MSG, Brushes.Red);
             FileToDecryptLabel.Content = fileInfo.Name;
         }
 
         private void HideEveryChild(Panel panel)
         {
             foreach (UIElement child in panel.Children) child.Visibility = Visibility.Hidden;
+        }
+
+        private void SetTextAndColor(Label element, string content, Brush brush = null)
+        {
+            brush = (null == brush) ? Brushes.White : brush;
+            element.Content = content;
+            element.Foreground = brush;
         }
 
         private void ShowResult(string message, bool success = false)
@@ -228,6 +251,7 @@ namespace XAdES_App
             if (success) Result.Foreground = Brushes.Green;
             else Result.Foreground = Brushes.Red;
         }
+
 
         private void ModeSelected(object sender, RoutedEventArgs e)
         {

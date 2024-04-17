@@ -65,11 +65,11 @@ namespace XAdES_App
                 byte[] encryptedData = rsa.Encrypt(fileBytes, true);
                 string filePath = $"{fileInfo.FullName}.enc";
                 File.WriteAllBytes(filePath, encryptedData);
-                if(deleteOriginalFile) File.Delete(fileInfo.FullName);
+                if (deleteOriginalFile) File.Delete(fileInfo.FullName);
                 return filePath;
             }
-            
-        }    
+
+        }
 
         public static string RSADecryptWithPrivateKey(FileInfo encryptedFileInfo, byte[] privateKey, bool deleteEncryptedFile = false)
         {
