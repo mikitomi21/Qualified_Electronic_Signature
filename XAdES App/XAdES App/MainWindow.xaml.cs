@@ -32,6 +32,7 @@ namespace XAdES_App
         public MainWindow()
         {
             InitializeComponent();
+            this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             HideEveryChild(ModePanel);
             if (null != ModePanel.Children[0]) ModePanel.Children[0].Visibility = Visibility.Visible;
         }
@@ -133,7 +134,7 @@ namespace XAdES_App
         /// <exception cref="PinNotSubmittedException">Thrown when the user closes the window without entering a PIN.</exception>
         private string GetPin()
         {
-            EnterPinWindow enterPinWindow = new EnterPinWindow();
+            EnterPinWindow enterPinWindow = new EnterPinWindow(this);
             enterPinWindow.ShowDialog();
             return enterPinWindow.WasPinSubmitted ? enterPinWindow.Pin : throw new PinNotSubmittedException("Pin not submitted");
         }

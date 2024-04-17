@@ -33,8 +33,6 @@ namespace XAdES_App
         {
             InitializeComponent();
             Owner = hostWindow;
-            WindowStartupLocation = WindowStartupLocation.CenterOwner;
-
         }
 
         private void SubmitPin()
