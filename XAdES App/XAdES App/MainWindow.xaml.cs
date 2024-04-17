@@ -18,6 +18,13 @@ namespace XAdES_App
 {
     public partial class MainWindow : Window
     {
+        private class PinNotSubmittedException : Exception
+        {
+            public PinNotSubmittedException() { }
+            public PinNotSubmittedException(string message) : base(message) { }
+            public PinNotSubmittedException(string message, Exception inner) : base(message, inner) { }
+        };
+
         private string _privateKeyPath = "";
         private string _inputFilePath = "";
 
@@ -27,8 +34,15 @@ namespace XAdES_App
         }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            RSA rsa = LoadRSAKeyFromFile(_privateKeyPath);
-            XAdESSigner.SingDocument(rsa, new FileInfo(_inputFilePath));
+            try
+            {
+                RSA rsa = LoadRSAKeyFromFile(_privateKeyPath);
+                XAdESSigner.SingDocument(rsa, new FileInfo(_inputFilePath));
+            }
+            catch (PinNotSubmittedException)
+            {
+
+            }
 
         }
         private RSA LoadRSAKeyFromFile(string path)
@@ -42,8 +56,7 @@ namespace XAdES_App
             }
             catch
             {
-                string pin = GetPin(null);
-                if (pin == "") throw new Exception("Could not load key");
+                string pin = GetPin();
                 rsa = DecryptRSA(fileBytes, int.Parse(pin));
             }
             return rsa;
@@ -51,20 +64,17 @@ namespace XAdES_App
 
         private string ChooseFile(string filter = "")
         {
-            Microsoft.Win32.OpenFileDialog dialog = new();
+            OpenFileDialog dialog = new();
 
             dialog.Multiselect = false;
             dialog.Title = "Select a folder";
             dialog.Filter = filter;
             dialog.InitialDirectory = Environment.CurrentDirectory;
 
-            // Show open folder dialog box
             bool? result = dialog.ShowDialog();
 
-            // Process open folder dialog box results
             if (result == true)
             {
-                // Get the selected folder
                 return dialog.FileName;
             }
             return "";
@@ -86,14 +96,16 @@ namespace XAdES_App
             return rsa;
         }
 
-        private string GetPin(Action<string> callback) {
-            string pin = "";
+        /// <summary>
+        /// This method prompts the user for PIN entry.
+        /// </summary>
+        /// <returns>The PIN entered by the user.</returns>
+        /// <exception cref="PinNotSubmittedException">Thrown when the user closes the window without entering a PIN.</exception>
+        private string GetPin()
+        {
             EnterPinWindow enterPinWindow = new EnterPinWindow();
-            enterPinWindow.EnqueueAction(callback);
-            enterPinWindow.EnqueueAction((pinString)=>pin = pinString);
             enterPinWindow.ShowDialog();
-            return pin;
-            
+            return enterPinWindow.WasPinSubmitted ? enterPinWindow.Pin : throw new PinNotSubmittedException("Pin not submitted");
         }
 
         private byte[] AesCfbDecrypt(byte[] encryptedArr, byte[] key, byte[] iv, int blockSize = 128)

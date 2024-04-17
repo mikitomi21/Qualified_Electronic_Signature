@@ -6,12 +6,13 @@
         xmlns:local="clr-namespace:XAdES_App"
         mc:Ignorable="d"
         Title="EnterPinWindow" Height="150" Width="350" Background="#FF202020"
+        Closing="Window_Closing"
         ResizeMode="NoResize">
     <Grid>
         <Label Content="Enter PIN:" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" FontSize="18"/>
         <TextBox x:Name="PinText" TextWrapping="Wrap" Text="TextBox" TextAlignment="Center" Margin="84,39,84,0" Height="28" VerticalAlignment="Top" TextChanged="TextBox_TextChanged"/>
-        <Button Content="OK" Margin="45,76,189,0" VerticalAlignment="Top" Height="30" Click="SubmitPin"/>
-        <Button Content="Cancel" Margin="186,76,45,0" VerticalAlignment="Top" Height="30"/>
+        <Button Content="OK" Margin="45,76,189,0" VerticalAlignment="Top" Height="30" Click="SubmitPinButton"/>
+        <Button Content="Cancel" Margin="186,76,45,0" VerticalAlignment="Top" Height="30" Click="CancelPinButton"/>
 
     </Grid>
 </Window>

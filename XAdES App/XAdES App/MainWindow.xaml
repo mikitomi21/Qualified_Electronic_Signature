@@ -13,13 +13,13 @@
         <Grid Margin="45,94,0,0" HorizontalAlignment="Left" Width="276" Height="123" VerticalAlignment="Top">
             <Label Content="Private Key" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White"/>
             <Button Content="Choose file" Margin="56,41,56,0" Click="Button_Click_1" Height="27" VerticalAlignment="Top" />
-            <Label x:Name="PrivateKeyFileName" Content="placeholder" HorizontalAlignment="Center" Margin="0,78,0,0" VerticalAlignment="Top" Foreground="White" FontWeight="Bold"/>
+            <Label x:Name="PrivateKeyFileName" Content="" HorizontalAlignment="Center" Margin="0,78,0,0" VerticalAlignment="Top" Foreground="White" FontWeight="Bold"/>
 
         </Grid>
         <Grid Margin="40,217,0,0" HorizontalAlignment="Left" Width="276" Height="123" VerticalAlignment="Top">
             <Label Content="File" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White"/>
             <Button Content="Choose file" Margin="56,41,56,0"  Height="27" VerticalAlignment="Top" Click="Button_Click_2" />
-            <Label x:Name="InputFileName" Content="placeholder" HorizontalAlignment="Center" Margin="0,78,0,0" VerticalAlignment="Top" Foreground="White" FontWeight="Bold"/>
+            <Label x:Name="InputFileName" Content="" HorizontalAlignment="Center" Margin="0,78,0,0" VerticalAlignment="Top" Foreground="White" FontWeight="Bold"/>
 
         </Grid>
     </Grid>

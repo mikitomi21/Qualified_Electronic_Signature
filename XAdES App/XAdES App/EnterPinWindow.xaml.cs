@@ -1,27 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
+﻿using System.ComponentModel;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+
 
 namespace XAdES_App
 {
-    /// <summary>
-    /// Interaction logic for EnterPinWindow.xaml
-    /// </summary>
     public partial class EnterPinWindow : Window
     {
-        private Queue<Action<string>> _actionQueue = new Queue<Action<string>>();
+        private string _pin = "";
+        private bool _wasPinSubmitted = false;
+        public string Pin
+        {
+            get
+            {
+                return _pin;
+            }
+        }
+        public bool WasPinSubmitted
+        {
+            get
+            {
+                return _wasPinSubmitted;
+            }
+        }
         public EnterPinWindow()
         {
             InitializeComponent();
@@ -37,34 +39,26 @@ namespace XAdES_App
 
         private void SubmitPin()
         {
-            InvokeActions();
+            _pin = PinText.Text;
+            _wasPinSubmitted = true;
+        }
+
+        private void CancelPin()
+        {
+            _pin = "";
+            _wasPinSubmitted = false;
+        }
+
+        private void SubmitPinButton(object sender, RoutedEventArgs e)
+        {
+            SubmitPin();
             Close();
         }
 
-        private void InvokeActions()
+        private void CancelPinButton(object sender, RoutedEventArgs e)
         {
-            foreach (var action in _actionQueue)
-            {
-                try
-                {
-                    action.Invoke(PinText.Text);
-                }
-                catch(Exception ex)
-                {
-                    Console.WriteLine("Could not invoke action");
-                    Console.WriteLine(ex.ToString());
-                    Console.WriteLine("-------------------------");
-                }
-            }
-        }
-        public void EnqueueAction(Action<string> action)
-        {
-            _actionQueue.Enqueue(action);
-        }
-
-        private void SubmitPin(object sender, RoutedEventArgs e)
-        {
-            SubmitPin();
+            CancelPin();
+            Close();
         }
 
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -72,6 +66,11 @@ namespace XAdES_App
             int prevCaretIndex = PinText.CaretIndex;
             PinText.Text = Regex.Replace(PinText.Text, @"[^\d]", "");
             PinText.CaretIndex = prevCaretIndex;
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            if (!_wasPinSubmitted) CancelPin();
         }
     }
 }
