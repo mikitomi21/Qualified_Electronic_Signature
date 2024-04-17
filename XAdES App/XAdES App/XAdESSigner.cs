@@ -15,6 +15,7 @@ namespace XAdES_App
 {
     public static class XAdESSigner
     {
+        private const string HASH_ALGORITHM = "SHA256";
 
         public static void SingDocument(RSA rsa, FileInfo document)
         {
@@ -23,7 +24,7 @@ namespace XAdES_App
                 new XElement("Extension", document.Extension),
                 new XElement("Date_of_modification", document.LastWriteTime)
                 );
-            var fileHash = CalculateFileHash(document.FullName, HashAlgorithm.Create("SHA256"));
+            var fileHash = CalculateFileHash(document.FullName, HashAlgorithm.Create(HASH_ALGORITHM));
             var encryptedFileHash = rsa.SignHash(fileHash, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
             XElement hash = new XElement("Signature", Convert.ToBase64String(encryptedFileHash));
             XElement timestamp = new XElement("Timestamp", DateTime.Now.ToString());
@@ -35,7 +36,16 @@ namespace XAdES_App
 
         }
 
-        static byte[] CalculateFileHash(string filePath, HashAlgorithm hashAlgorithm)
+        public static bool VerifySignature(RSA rsa, FileInfo document, XmlDocument signatureFile)
+        {
+            var list = signatureFile.GetElementsByTagName("Signature");
+            if (list.Count > 1 || list.Count < 1) throw new Exception("Invalid signature file");
+            byte[] signature = Convert.FromBase64String(list[0].InnerText);
+            byte[] hash = CalculateFileHash(document.FullName, HashAlgorithm.Create(HASH_ALGORITHM));
+            return rsa.VerifyHash(hash, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+        }
+
+        private static byte[] CalculateFileHash(string filePath, HashAlgorithm hashAlgorithm)
         {
             using (var stream = File.OpenRead(filePath))
             {
