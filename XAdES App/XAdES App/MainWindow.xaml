@@ -5,23 +5,50 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:XAdES_App"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Background="#FF202020">
-    <Grid>
-        <TextBox TextWrapping="Wrap" Text="TextBox" Margin="366,54,363,249" RenderTransformOrigin="0.529,0.002"/>
+        Title="MainWindow" Height="600" Width="450" Background="#FF202020">
+    <Grid Name="MainGrid">
         <Label Content="XAdES Signing App" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" Foreground="White"/>
-        <Button Content="Button" HorizontalAlignment="Left" Margin="298,232,0,0" VerticalAlignment="Top" Height="77" Width="207" Click="Button_Click"/>
-        <Grid Margin="45,94,0,0" HorizontalAlignment="Left" Width="276" Height="123" VerticalAlignment="Top">
-            <Label Content="Private Key" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White"/>
-            <Button Content="Choose file" Margin="56,41,56,0" Click="Button_Click_1" Height="27" VerticalAlignment="Top" />
-            <Label x:Name="PrivateKeyFileName" Content="" HorizontalAlignment="Center" Margin="0,78,0,0" VerticalAlignment="Top" Foreground="White" FontWeight="Bold"/>
-
-        </Grid>
-        <Grid Margin="40,217,0,0" HorizontalAlignment="Left" Width="276" Height="123" VerticalAlignment="Top">
-            <Label Content="File" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White"/>
-            <Button Content="Choose file" Margin="56,41,56,0"  Height="27" VerticalAlignment="Top" Click="Button_Click_2" />
-            <Label x:Name="InputFileName" Content="" HorizontalAlignment="Center" Margin="0,78,0,0" VerticalAlignment="Top" Foreground="White" FontWeight="Bold"/>
-
+        <Label Content="Mode" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="16" FontWeight="Bold" Foreground="White" Margin="0,36,0,0"/>
+        <ComboBox Name="ModeCombo" HorizontalAlignment="Center" FontSize="14" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,67,0,0" VerticalAlignment="Top" Width="150" Height="25" SelectionChanged="ModeComboBox_SelectionChanged">
+            <ComboBoxItem Name="SignPanelSelector" Selected="ModeSelected" IsSelected="True" Content="Sign"/>
+            <ComboBoxItem Name="VerifyPanelSelector" Selected="ModeSelected" >Verify Signature</ComboBoxItem>
+            <ComboBoxItem Name="EncryptPanelSelector" Selected="ModeSelected" >Encrypt</ComboBoxItem>
+            <ComboBoxItem Name="DecryptPanelSelector" Selected="ModeSelected" >Decrypt</ComboBoxItem>
+        </ComboBox>
+        <Grid Name="ModePanel" Margin="0,97,0,0">
+            <Grid x:Name="SignPanel" Visibility="Visible" >
+                <Grid.RowDefinitions >
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="50"/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0" Width="auto" VerticalAlignment="Stretch">
+                    <Grid.RowDefinitions >
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="35"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Row="0" Height="auto" Content="Private key" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" />
+                    <Button Grid.Row="1" Content="Choose file"  Click="ChooseKeyButton" Height="auto" Width="150"/>
+                    <Label Grid.Row="2" Height="auto" x:Name="PrivateKeyFileName" Content="dsd" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" FontWeight="Bold"/>
+                </Grid>
+                <Grid Grid.Row="1" Width="auto" VerticalAlignment="Stretch">
+                    <Grid.RowDefinitions >
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="35"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Row="0" Content="File" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" />
+                    <Button Grid.Row="1" Content="Choose file"  Click="ChooseFileButton" Height="auto" Width="150"/>
+                    <Label Grid.Row="2" x:Name="InputFileName" Content="ds" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" FontWeight="Bold"/>
+                </Grid>
+                <Grid Grid.Row="2">
+                    <Button Height="25" Content="Sign" Width="150"/>
+                </Grid>
         </Grid>
     </Grid>
+
+    </Grid>
+
 </Window>
 

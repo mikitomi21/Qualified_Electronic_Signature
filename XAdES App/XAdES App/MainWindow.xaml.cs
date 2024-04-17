@@ -31,6 +31,7 @@ namespace XAdES_App
         public MainWindow()
         {
             InitializeComponent();
+            var test = ModePanel.Children;
         }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -139,18 +140,38 @@ namespace XAdES_App
             }
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void ChooseKeyButton(object sender, RoutedEventArgs e)
         {
             _privateKeyPath = ChooseFile("PEM files | *.pem");
             FileInfo fileInfo = new FileInfo(_privateKeyPath);
             PrivateKeyFileName.Content = fileInfo.Name;
         }
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
+        private void ChooseFileButton(object sender, RoutedEventArgs e)
         {
             _inputFilePath = ChooseFile();
             FileInfo fileInfo = new FileInfo(_inputFilePath);
             InputFileName.Content = fileInfo.Name;
+        }
+
+        private void ModeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            return;
+            if (null == ModePanel) return;
+            foreach (UIElement child in ModePanel.Children) child.Visibility = Visibility.Hidden;
+        }
+
+        private void ModeSelected(object sender, RoutedEventArgs e)
+        {
+            if (null == ModePanel) return;
+            foreach (Panel child in ModePanel.Children)
+            {
+                if ($"{child.Name}Selector".Equals(((ComboBoxItem)sender).Name))
+                {
+                    child.Visibility = Visibility.Visible;
+                }
+                else child.Visibility = Visibility.Hidden;
+            }
         }
     }
 }
