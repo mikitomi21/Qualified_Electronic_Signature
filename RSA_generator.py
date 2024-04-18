@@ -27,8 +27,8 @@ def generate_rsa_keys(pin: int) -> (bytes, bytes):
     )
     public_key = private_key.public_key()
 
-    aes_key = pin.to_bytes(32, 'big')
-    initialization_vector = pin.to_bytes(16, 'big')
+    aes_key = pin.to_bytes(32, 'little')
+    initialization_vector = pin.to_bytes(16, 'little')
 
     cipher = Cipher(algorithms.AES(aes_key), modes.CFB(initialization_vector), backend=default_backend())
     encryptor = cipher.encryptor()

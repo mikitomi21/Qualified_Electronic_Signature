@@ -22,8 +22,8 @@ namespace XAdES_App
         private const int MAX_RSA_FILE_SIZE_IN_BYTES = 512;
         private const string MAX_RSA_FILE_SIZE_EXCEED_ERROR_MSG = "File size is too big, File must be <=512 B";
 
-        private string _privateKeyPath = "D:\\Studia\\6\\Bezpieczeństwo Systemów Komputerowych\\Projekt\\Qualified_Electronic_Signature\\private_key.pem";
-        private string _publicKeyPath = "D:\\Studia\\6\\Bezpieczeństwo Systemów Komputerowych\\Projekt\\Qualified_Electronic_Signature\\public_key.pem";
+        private string _privateKeyPath = "";
+        private string _publicKeyPath = "";
         private string _inputFilePath = "";
         private string _signatureFilePath = "";
         private string _encryptedFilePath = "";
@@ -39,17 +39,36 @@ namespace XAdES_App
 
         private bool EncryptFile(string filePath)
         {
-            RSA rsa = LoadRSAKeyFromFile(_publicKeyPath);
-            string newFilePath = EncryptionUtils.RSAEncryptWithPublicKey(new FileInfo(filePath), rsa.ExportRSAPublicKey());
-            Process.Start("explorer.exe", $"/select,\"{newFilePath}\"");
-            return true;
+            try
+            {
+                RSA rsa = LoadRSAKeyFromFile(_publicKeyPath);
+                string newFilePath = EncryptionUtils.RSAEncryptWithPublicKey(new FileInfo(filePath), rsa.ExportRSAPublicKey());
+                Process.Start("explorer.exe", $"/select,\"{newFilePath}\"");
+                ShowResult("File was Ecnrypted", true); ;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                ShowResult(ex.Message);
+            }
+
+            return false;
         }
         private bool DecryptFile(string filePath)
         {
-            RSA rsa = LoadRSAKeyFromFile(_privateKeyPath);
-            string newFilePath = EncryptionUtils.RSADecryptWithPrivateKey(new FileInfo(filePath), rsa.ExportRSAPrivateKey());
-            Process.Start("explorer.exe", $"/select,\"{newFilePath}\"");
-            return true;
+            try
+            {
+                RSA rsa = LoadRSAKeyFromFile(_privateKeyPath);
+                string newFilePath = EncryptionUtils.RSADecryptWithPrivateKey(new FileInfo(filePath), rsa.ExportRSAPrivateKey());
+                Process.Start("explorer.exe", $"/select,\"{newFilePath}\"");
+                ShowResult("File was decrypted", true); ;
+                return true;
+            }
+            catch(Exception ex)
+            {
+                ShowResult(ex.Message); ;
+            }
+            return false;
         }
 
         private void SignButton(object sender, RoutedEventArgs e)
@@ -205,7 +224,7 @@ namespace XAdES_App
                     $"{_fileToBeEncryptedPath}{(FileToEncryptLabel.Content.Equals("") ? "" : " ")}does not exist!",
                     Brushes.Red);
             }
-            FileInfo fileToBeEncryptedInfo = new FileInfo(_inputFilePath);
+            FileInfo fileToBeEncryptedInfo = new FileInfo(_fileToBeEncryptedPath);
             if (fileToBeEncryptedInfo.Length > MAX_RSA_FILE_SIZE_IN_BYTES)
             {
                 SetTextAndColor(FileToEncryptLabel,
